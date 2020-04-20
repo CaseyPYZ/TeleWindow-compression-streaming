@@ -48,3 +48,7 @@ package-lock.json
 
 # Yarn Integrity file
 .yarn-integrity
+
+# VS workspace directory
+vs-workspaces
+*/vs-workspaces
