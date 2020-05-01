@@ -93,14 +93,23 @@ socket.on('message', function(message) {
 var localVideo = document.querySelector('#localVideo');
 var remoteVideo = document.querySelector('#remoteVideo');
 
-navigator.mediaDevices.getUserMedia({
-  audio: false,
-  video: true
-})
-.then(gotStream)
-.catch(function(e) {
-  alert('getUserMedia() error: ' + e.name);
-});
+var testVideo = document.querySelector('#testVideo');
+
+// navigator.mediaDevices.getUserMedia({
+//   audio: false,
+//   video: true
+// })
+// .then(gotStream)
+// .catch(function(e) {
+//   alert('getUserMedia() error: ' + e.name);
+// });
+
+
+var testStream = testVideo.captureStream();
+gotStream(testStream);
+
+//testVideo.captureStream().then(gotStream);
+
 
 function gotStream(stream) {
   console.log('Adding local stream.');
