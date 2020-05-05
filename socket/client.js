@@ -1,20 +1,13 @@
-var ioClient = require('socket.io-client');
-
-const socket = ioClient.connect('http://localhost:3000');
+var io = require('socket.io-client');
 
 
-'use strict';
-
-const rs2 = require('node-librealsense');
-// const {GLFWWindow} = require('./glfw-window.js');
-// const {glfw} = require('./glfw-window.js');
-
-
-file = "test";
-socket.emit('connection',()=>{});
-socket.on('sending_file', (data) => {
+const socket = io.connect('http://localhost:3001');
+socket.on('news', (data) => {
+  console.log(data);
+  socket.emit('my other event', { my: 'data' });
+});
+var file = "haha";
+socket.emit('file_transfer',file);
+socket.on('file_receive',(data)=>{
   console.log(data);
 });
-
-socket.emit('file_transfer',{file});
-

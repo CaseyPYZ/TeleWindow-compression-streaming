@@ -1,20 +1,21 @@
-var http = require('http');
-var io = require('socket.io');
-io = io(http);
 
-var users = [];
+
+const server = require('http').Server();
+const io = require('socket.io')(server);
+
+server.listen(3001);
+var users = []
 
 io.on('connection', (socket) => {
-    console.log("connect");
     users.push(socket);
-    socket.on('file_transfer',(data)=>{
-        io.broadcast.emit('sending_file',data);
-        console.log(data);
+    console.log(users);
+    console.log("connect");
+    socket.emit('news', { hello: 'world' });
+    socket.on('my other event', (data) => {
+    console.log(data);
+  });
+    socket.on("file_transfer",(data)=>{
+        socket.broadcast.emit('file_receive',data);
     });
-    console.log('a user connected');
 });
 
-
-http.createServer().listen(3000, () => {
-    console.log('listening on *:3000');
-});
