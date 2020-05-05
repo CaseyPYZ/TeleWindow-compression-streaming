@@ -5,7 +5,7 @@
 'use strict';
 
 const glfw = require('node-glfw-3');
-const rs2 = require('../index.js');
+const rs2 = require("node-librealsense");
 const now = require('performance-now');
 
 class FPSCounter {
