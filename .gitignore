@@ -52,3 +52,7 @@ package-lock.json
 # VS workspace directory
 vs-workspaces
 */vs-workspaces
+
+# Test videos
+video
+*/video

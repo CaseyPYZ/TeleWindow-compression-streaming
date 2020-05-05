@@ -105,7 +105,7 @@ var testVideo = document.querySelector('#testVideo');
 // });
 
 
-var testStream = testVideo.captureStream();
+var testStream = testVideo.mozCaptureStream();
 gotStream(testStream);
 
 //testVideo.captureStream().then(gotStream);
