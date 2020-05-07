@@ -3,26 +3,43 @@
 /****************************************************************************
 * RS setup
 ****************************************************************************/
+const WIDTH = 640;
+const HEIGHT = 480;
 
 const rs2 = require('node-librealsense');
+
+const {GLFWWindow} = require('./js/glfw-window.js');
+const {glfw} = require('./js/glfw-window.js');
+
+const win = new GLFWWindow(1280, 720, 'Node.js Capture Example');
 
 const colorizer = new rs2.Colorizer();  // This will make depth image pretty
 const pipeline = new rs2.Pipeline();  // Main work pipeline of RealSense camera
 
 const filePath = "/Users/user/Desktop/CS_Capstone/test_files/depth_under_water.bag ";
 let cfg = new rs2.Config();
-cfg.enableDeviceFromFile(filePath);
+ 
 
-// Start input stream
+////// BUTTONS //////
+var loadBagBtn = document.getElementById('loadBag');
+var streamBagBtn = document.getElementById('streamBag');
 
-pipeline.start(cfg);  
+// Attach event handlers
+loadBagBtn.addEventListener('click', loadBagStream);
+streamBagBtn.addEventListener('click', streamBagFrames);
 
-const localFrameset = pipeline.waitForFrames();  // Get a set of frames
-const localDepthArray;
-const localColorArray;
+////// GLOBAL VARIABLES NEEDED ?
+// Get a set of frames
+const localFrameset = null;  
+const localDepthArray = null;
+const localColorArray = null;
 
-const remoteDepthArray;
-const remoteColorArray;
+// const remoteDepthArray;
+// const remoteColorArray;
+
+// snap - choose file & start pipeline ?
+
+////// //////
 
 // const depth = frameset.depthFrame;  // Get depth data
 // const depthRGB = colorizer.colorize(depth);  // Make depth image pretty
@@ -287,21 +304,187 @@ function onDataChannelCreated(channel) {
   }
 
   channel.onmessage = (adapter.browserDetails.browser === 'firefox') ?
-  receiveDataFirefoxFactory() : receiveDataChromeFactory();
+  //receiveDataFirefoxFactory() : receiveDataChromeFactory();
+  
+  // On Receiving Bag Data
+  receiveDataFirefoxFactory() : receiveDepthDataChromeFactory();
 }
 
-function receiveDataChromeFactory() {
+
+// function receiveDataChromeFactory() {
+//   var buf, count;
+
+//   return function onmessage(event) {
+//     if (typeof event.data === 'string') {
+//       buf = window.buf = new Uint8ClampedArray(parseInt(event.data));
+//       count = 0;
+//       console.log('Expecting a total of ' + buf.byteLength + ' bytes');
+//       return;
+//     }
+
+//     var data = new Uint8ClampedArray(event.data);
+//     buf.set(data, count);
+
+//     count += data.byteLength;
+//     console.log('count: ' + count);
+
+//     if (count === buf.byteLength) {
+//       // we're done: all data chunks have been received
+//       console.log('Done. Rendering photo.');
+//       renderPhoto(buf);
+//     }
+//   };
+// }
+
+// function receiveDataFirefoxFactory() {
+//   var count, total, parts;
+
+//   return function onmessage(event) {
+//     if (typeof event.data === 'string') {
+//       total = parseInt(event.data);
+//       parts = [];
+//       count = 0;
+//       console.log('Expecting a total of ' + total + ' bytes');
+//       return;
+//     }
+
+//     parts.push(event.data);
+//     count += event.data.size;
+//     console.log('Got ' + event.data.size + ' byte(s), ' + (total - count) +
+//                 ' to go.');
+
+//     if (count === total) {
+//       console.log('Assembling payload');
+//       var buf = new Uint8ClampedArray(total);
+//       var compose = function(i, pos) {
+//         var reader = new FileReader();
+//         reader.onload = function() {
+//           buf.set(new Uint8ClampedArray(this.result), pos);
+//           if (i + 1 === parts.length) {
+//             console.log('Done. Rendering photo.');
+//             renderPhoto(buf);
+//           } else {
+//             compose(i + 1, pos + this.result.byteLength);
+//           }
+//         };
+//         reader.readAsArrayBuffer(parts[i]);
+//       };
+//       compose(0, 0);
+//     }
+//   };
+// }
+
+/****************************************************************************
+* Aux functions, mostly UI-related
+****************************************************************************/
+
+
+
+// function snapPhoto() {
+//   photoContext.drawImage(video, 0, 0, photo.width, photo.height);
+//   show(photo, sendBtn);
+// }
+
+// function sendPhoto() {
+//   // Split data channel message in chunks of this byte length.
+//   var CHUNK_LEN = 64000;
+//   console.log('width and height ', photoContextW, photoContextH);
+//   var img = photoContext.getImageData(0, 0, photoContextW, photoContextH),
+//   len = img.data.byteLength,
+//   n = len / CHUNK_LEN | 0;
+
+//   console.log('Sending a total of ' + len + ' byte(s)');
+
+//   if (!dataChannel) {
+//     logError('Connection has not been initiated. ' +
+//       'Get two peers in the same room first');
+//     return;
+//   } else if (dataChannel.readyState === 'closed') {
+//     logError('Connection was lost. Peer closed the connection.');
+//     return;
+//   }
+
+//   dataChannel.send(len);
+
+//   // split the photo and send in chunks of about 64KB
+//   for (var i = 0; i < n; i++) {
+//     var start = i * CHUNK_LEN,
+//     end = (i + 1) * CHUNK_LEN;
+//     console.log(start + ' - ' + (end - 1));
+//     dataChannel.send(img.data.subarray(start, end));
+//   }
+
+//   // send the reminder, if any
+//   if (len % CHUNK_LEN) {
+//     console.log('last ' + len % CHUNK_LEN + ' byte(s)');
+//     dataChannel.send(img.data.subarray(n * CHUNK_LEN));
+//   }
+// }
+
+// function snapAndSend() {
+//   snapPhoto();
+//   sendPhoto();
+// }
+
+// function renderPhoto(data) {
+//   var canvas = document.createElement('canvas');
+//   canvas.width = photoContextW;
+//   canvas.height = photoContextH;
+//   canvas.classList.add('incomingPhoto');
+//   // trail is the element holding the incoming images
+//   trail.insertBefore(canvas, trail.firstChild);
+
+//   var context = canvas.getContext('2d');
+//   var img = context.createImageData(photoContextW, photoContextH);
+//   img.data.set(data);
+//   context.putImageData(img, 0, 0);
+// }
+
+// function show() {
+//   Array.prototype.forEach.call(arguments, function(elem) {
+//     elem.style.display = null;
+//   });
+// }
+
+// function hide() {
+//   Array.prototype.forEach.call(arguments, function(elem) {
+//     elem.style.display = 'none';
+//   });
+// }
+
+function randomToken() {
+  return Math.floor((1 + Math.random()) * 1e16).toString(16).substring(1);
+}
+
+function logError(err) {
+  if (!err) return;
+  if (typeof err === 'string') {
+    console.warn(err);
+  } else {
+    console.warn(err.toString(), err);
+  }
+}
+
+
+/****************************************************************************
+* WebRTC peer connection and data channel - bag factory
+****************************************************************************/
+
+
+function receiveDepthDataChromeFactory() {
   var buf, count;
 
   return function onmessage(event) {
+
+    // Initialize buffer
     if (typeof event.data === 'string') {
-      buf = window.buf = new Uint8ClampedArray(parseInt(event.data));
+      buf = window.buf = new Uint8Array(parseInt(event.data));
       count = 0;
       console.log('Expecting a total of ' + buf.byteLength + ' bytes');
       return;
     }
 
-    var data = new Uint8ClampedArray(event.data);
+    var data = new Uint8Array(event.data);
     buf.set(data, count);
 
     count += data.byteLength;
@@ -309,62 +492,55 @@ function receiveDataChromeFactory() {
 
     if (count === buf.byteLength) {
       // we're done: all data chunks have been received
-      console.log('Done. Rendering photo.');
-      renderPhoto(buf);
+      console.log('Done. Rendering remote depth frame.');
+      renderRemoteDepthFrame(buf);
     }
   };
 }
 
-function receiveDataFirefoxFactory() {
-  var count, total, parts;
-
-  return function onmessage(event) {
-    if (typeof event.data === 'string') {
-      total = parseInt(event.data);
-      parts = [];
-      count = 0;
-      console.log('Expecting a total of ' + total + ' bytes');
-      return;
-    }
-
-    parts.push(event.data);
-    count += event.data.size;
-    console.log('Got ' + event.data.size + ' byte(s), ' + (total - count) +
-                ' to go.');
-
-    if (count === total) {
-      console.log('Assembling payload');
-      var buf = new Uint8ClampedArray(total);
-      var compose = function(i, pos) {
-        var reader = new FileReader();
-        reader.onload = function() {
-          buf.set(new Uint8ClampedArray(this.result), pos);
-          if (i + 1 === parts.length) {
-            console.log('Done. Rendering photo.');
-            renderPhoto(buf);
-          } else {
-            compose(i + 1, pos + this.result.byteLength);
-          }
-        };
-        reader.readAsArrayBuffer(parts[i]);
-      };
-      compose(0, 0);
-    }
-  };
-}
 
 
 /****************************************************************************
-* Aux functions, mostly UI-related
+* Aux functions - bag
 ****************************************************************************/
+
+function loadBagStream(){
+  cfg.enableDeviceFromFile(filePath);
+
+  // Start input stream
+  pipeline.start(cfg);
+}
+
+
+function streamBagFrames(){
+
+  ////// ROBUST BOOLEAN NEEDED: while there are new frames ?
+  ////// while ( pipeline.pollForFrames(localFrameset) )
+
+  while ( true ) {
+
+    // Wait until a new set of frames becomes available - BLOCKING ?
+    localFrameset = pipeline.waitForFrames();
+
+    localDepthArray = colorizer.colorize(localFrameset.depthFrame).data;
+    localColorArray = localFrameset.colorFrame.data;
+
+    // Send Local Frame (one frame)
+    sendLocalFrameData();
+
+
+  }
+
+}
+
 
 function sendLocalFrameData(){
   // Split data channel message in chunks of this byte length.
   var CHUNK_LEN = 64000;
 
-  const localDepthArray = colorizer.colorize(localFrameset.depthFrame).data;
-  const localColorArray = localFrameset.colorFrame.data;
-  var colorLen = localColorArray.byteLength, depthLen = localDepthArray.byteLength, totalLen = colorLen + depthLen,
+  var colorLen = localColorArray.byteLength,
+      depthLen = localDepthArray.byteLength,
+      totalLen = colorLen + depthLen,
       colorN = colorN / CHUNK_LEN | 0,
       depthN = depthN / CHUNK_LEN | 0,
       totalN = totalLen / CHUNK_LEN | 0;
@@ -385,7 +561,7 @@ function sendLocalFrameData(){
 
   dataChannel.send(depthLen);
 
-  // split the array and send in chunks of about 64KB
+  // Split the array and send in chunks of about 64KB
   for (var i = 0; i < depthN; i++) {
     var start = i * CHUNK_LEN,
     end = (i + 1) * CHUNK_LEN;
@@ -402,87 +578,27 @@ function sendLocalFrameData(){
 }
 
 
-function snapPhoto() {
-  photoContext.drawImage(video, 0, 0, photo.width, photo.height);
-  show(photo, sendBtn);
-}
+function renderRemoteDepthFrame(depthData){
+  // A GLFW Window to display the received frames
+  const win = new GLFWWindow(1280, 720, 'Node.js Capture Example');
 
-function sendPhoto() {
-  // Split data channel message in chunks of this byte length.
-  var CHUNK_LEN = 64000;
-  console.log('width and height ', photoContextW, photoContextH);
-  var img = photoContext.getImageData(0, 0, photoContextW, photoContextH),
-  len = img.data.byteLength,
-  n = len / CHUNK_LEN | 0;
+  while (! win.shouldWindowClose()) {
+    
+    // Build the color map - done before transmission
+    //const depthMap = colorizer.colorize(frameset.depthFrame);
 
-  console.log('Sending a total of ' + len + ' byte(s)');
+    if (depthData) {
 
-  if (!dataChannel) {
-    logError('Connection has not been initiated. ' +
-      'Get two peers in the same room first');
-    return;
-  } else if (dataChannel.readyState === 'closed') {
-    logError('Connection was lost. Peer closed the connection.');
-    return;
+      // Paint the images onto the window
+      win.beginPaint();
+      //const color = frameset.colorFrame; // (-> remoteColorArray);
+      glfw.draw2x2Streams(win.window, 1,
+          depthData, 'rgb8', WIDTH, HEIGHT,
+          //color.data, 'rgb8', color.width, color.height
+          );
+
+      win.endPaint();
+    }
   }
 
-  dataChannel.send(len);
-
-  // split the photo and send in chunks of about 64KB
-  for (var i = 0; i < n; i++) {
-    var start = i * CHUNK_LEN,
-    end = (i + 1) * CHUNK_LEN;
-    console.log(start + ' - ' + (end - 1));
-    dataChannel.send(img.data.subarray(start, end));
-  }
-
-  // send the reminder, if any
-  if (len % CHUNK_LEN) {
-    console.log('last ' + len % CHUNK_LEN + ' byte(s)');
-    dataChannel.send(img.data.subarray(n * CHUNK_LEN));
-  }
-}
-
-function snapAndSend() {
-  snapPhoto();
-  sendPhoto();
-}
-
-function renderPhoto(data) {
-  var canvas = document.createElement('canvas');
-  canvas.width = photoContextW;
-  canvas.height = photoContextH;
-  canvas.classList.add('incomingPhoto');
-  // trail is the element holding the incoming images
-  trail.insertBefore(canvas, trail.firstChild);
-
-  var context = canvas.getContext('2d');
-  var img = context.createImageData(photoContextW, photoContextH);
-  img.data.set(data);
-  context.putImageData(img, 0, 0);
-}
-
-function show() {
-  Array.prototype.forEach.call(arguments, function(elem) {
-    elem.style.display = null;
-  });
-}
-
-function hide() {
-  Array.prototype.forEach.call(arguments, function(elem) {
-    elem.style.display = 'none';
-  });
-}
-
-function randomToken() {
-  return Math.floor((1 + Math.random()) * 1e16).toString(16).substring(1);
-}
-
-function logError(err) {
-  if (!err) return;
-  if (typeof err === 'string') {
-    console.warn(err);
-  } else {
-    console.warn(err.toString(), err);
-  }
 }
