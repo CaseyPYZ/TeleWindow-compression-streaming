@@ -1,6 +1,5 @@
-var io = require('socket.io-client');
+const io = require('socket.io-client');
 const rs2 = require("node-librealsense")
-// console.log(rs2);
 const {GLFWWindow} = require('./glfw-window.js');
 const {glfw} = require('./glfw-window.js');
 
@@ -20,6 +19,8 @@ cfg.enableDeviceFromFile(file);
 let pipeline = new rs2.Pipeline();
 pipeline.start(cfg);
 
+let lookahead = false;
+let streamOn = true;
 
 const socket = io.connect('http://localhost:3001');
 socket.on('news', (data) => {
@@ -27,11 +28,14 @@ socket.on('news', (data) => {
   socket.emit('my other event', { my: 'data' });
 });
 
-// var file2 = "monstor1";
-// socket.emit('file_transfer',file2);
 
-socket.on('file_receive',(data)=>{
-  console.log(data);
+// socket.on('file_receive',(data)=>{
+//   console.log(data);
+// });
+
+socket.on('receiver_break',(data)=>{
+  console.log(data.msg);
+  streamOn = false;
 });
 
 const judge = true;
@@ -45,21 +49,45 @@ const judge = true;
 //     // depthMap = colorizer.colorize(frameset.depthFrame);
     
 // }, 1000/30);
+
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
-  }
+}
 
+/**
+ * Transfer data
+ */
 async function trans() {
+
     let count = 0;
-    while(count<300){
-        const frameset = pipeline.waitForFrames();
+    while(streamOn){
+      //const frameset = pipeline.waitForFrames();
+      const frameset = pipeline.pollForFrames();
+      if(frameset){
         const depthMap = colorizer.colorize(frameset.depthFrame);
+
+        // Emit Metadata First
+        if(!lookahead){
+          let specifics = {
+            width: depthMap.width,
+            height: depthMap.height
+          };
+          socket.emit('meta', specifics);
+          lookahead = true;
+        }
+
         socket.emit('file_transfer',depthMap.data.buffer);
-        // console.log("depthMap");
-        await sleep(1);
+        await sleep(34);
         count += 1;
+        console.log(count);
+        if(count>=100){
+          console.log("Ending.");
+          break;
+        }
+      }
     }
-    socket.emit('done',"donedone");
+
+    socket.emit('sender_done',"Sender done.");
     pipeline.stop();
     pipeline.destroy();
     win.destroy();
@@ -67,4 +95,3 @@ async function trans() {
 }
 
 trans()
-

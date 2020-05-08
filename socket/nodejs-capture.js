@@ -32,7 +32,7 @@ const colorizer = new rs2.Colorizer();
  
 // modification of context 
 
-const file = '/Users/michaelzhang/Desktop/CS_Capstone/test_files/d435i_walking.bag';
+const file = '/Users/user/Desktop/CS_Capstone/test_files/d435i_walking.bag';
 let cfg = new rs2.Config();
 cfg.enableDeviceFromFile(file);
 let pipeline = new rs2.Pipeline();
@@ -41,9 +41,11 @@ pipeline.start(cfg);
 // Start the camera
 // pipeline.start();
 
+var count = 0;
 
 while (! win.shouldWindowClose()) {
   const frameset = pipeline.waitForFrames();
+  
   // use draco to encode
 
   // Build the color map
@@ -57,8 +59,10 @@ while (! win.shouldWindowClose()) {
     // Paint the images onto the window
     win.beginPaint();
     const color = frameset.colorFrame;
-    console.log(color.width);
-    console.log(color.height);
+    // console.log(color.width);
+    // console.log(color.height);
+    count++;
+    console.log(count);
     glfw.draw2x2Streams(win.window, 1,
         depthMap.data, 'rgb8', depthMap.width, depthMap.height,
         color.data, 'rgb8', color.width, color.height
@@ -66,6 +70,8 @@ while (! win.shouldWindowClose()) {
     win.endPaint();
   }
 }
+
+console.log("end");
 
 pipeline.stop();
 pipeline.destroy();

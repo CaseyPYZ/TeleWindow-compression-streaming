@@ -84,7 +84,7 @@ class GLFWWindow {
     // We don't clear buffer for now, because
     //  there is currently sync issue between depth & color stream
     //
-    // glfw.ClearColorBuffer();
+    glfw.ClearColorBuffer();
   }
 
   endPaint() {
