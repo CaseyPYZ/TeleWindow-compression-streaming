@@ -15,7 +15,7 @@ io.on('connection', (socket) => {
     // console.log(data);
     });
     socket.on("file_transfer",(data)=>{
-        // console.log(data);
+        console.log(data);
         socket.broadcast.emit('file_receive',data);
     });
     socket.on('done',(data)=>{
