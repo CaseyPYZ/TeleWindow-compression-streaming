@@ -4,6 +4,9 @@ const rs2 = require("node-librealsense")
 const {GLFWWindow} = require('./glfw-window.js');
 const {glfw} = require('./glfw-window.js');
 
+const orle = require('orle');
+
+
 const socket = io.connect('http://localhost:3001');
 socket.on('news', (data) => {
   console.log(data);
@@ -27,17 +30,34 @@ socket.on('meta',(data) => {
   specs.height = data.height;
 });
 
+
 socket.on('file_receive',(data)=>{
+  receive(data);
+});
+
+socket.on('sender_done',(data)=>{
+  console.log(data);
+  win.destroy();
+});
+
+async function receive(data){
+
+  /*** ORLE DECODING ***
+     * const depthMap = await orle.decode(data);
+     */
+
   const depthMap = new Uint8Array(data);
+
   win.beginPaint();
   // const color = frameset.colorFrame;
   // console.log(color.width);
   // console.log(color.height);
-  glfw.draw2x2Streams(win.window, 2,
+  glfw.draw2x2Streams(win.window, 1,
       depthMap, 'rgb8', specs.width, specs.height,
       // color.data, 'rgb8', color.width, color.height
       );
   win.endPaint();
+  count++;
   console.log(count);
 
   // If window is closed
@@ -45,9 +65,5 @@ socket.on('file_receive',(data)=>{
     // END STREAMING
     socket.emit('receiver_break',{msg : "Receiver ended stream."});
   }
-});
 
-socket.on('sender_done',(data)=>{
-  console.log(data);
-  win.destroy();
-});
+}
