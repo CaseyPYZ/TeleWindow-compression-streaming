@@ -3,7 +3,7 @@ const rs2 = require("node-librealsense")
 const {GLFWWindow} = require('./glfw-window.js');
 const {glfw} = require('./glfw-window.js');
 
-//add 3d video
+const orle = require('orle');
 
 // A GLFW Window to display the captured image
 const win = new GLFWWindow(1280, 720, 'Node.js Capture Example');
@@ -76,8 +76,15 @@ async function trans() {
           lookahead = true;
         }
 
-        socket.emit('file_transfer',depthMap.data.buffer);
+        /*** ORLE ENCODING - much more delay ***
+           * const buffer = await orle.encode( depthMap.data );
+           * socket.emit('file_transfer', buffer);
+           */
+
+
+        socket.emit('file_transfer', depthMap.data.buffer);
         await sleep(34);
+
         count += 1;
         console.log(count);
         if(count>=100){
