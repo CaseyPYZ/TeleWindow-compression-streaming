@@ -4,81 +4,50 @@ const rs2 = require("node-librealsense")
 const {GLFWWindow} = require('./glfw-window.js');
 const {glfw} = require('./glfw-window.js');
 
-//add 3d video
-const framebuffer = [];
-// A GLFW Window to display the captured image
-const win = new GLFWWindow(1280, 720, 'Node.js Capture Example');
-
-// Colorizer is used to map distance in depth image into different colors
-const colorizer = new rs2.Colorizer();
-
-// const file = '/Users/michaelzhang/Desktop/CS_Capstone/test_files/d435i_walking.bag';
-// let cfg = new rs2.Config();
-// cfg.enableDeviceFromFile(file);
-// let pipeline = new rs2.Pipeline();
-// pipeline.start(cfg);
-
-
 const socket = io.connect('http://localhost:3001');
 socket.on('news', (data) => {
   console.log(data);
   socket.emit('my other event', { my: 'data' });
 });
-// var file = "haha";
-// socket.emit('file_transfer',file);
-// socket.on('file_receive',(data)=>{
-//   console.log(data);
-// });
-socket.on('file_receive',(data)=>{
-  var array = new Float32Array(data);
-  framebuffer.push(array);
-  console.log(data);
+
+var file = "haha";
+socket.emit('file_transfer',file);
+
+const win = new GLFWWindow(800, 450, 'Bag Streaming Test');
+
+var count = 0;
+
+let specs = {
+  width: 0,
+  height: 0
+};
+
+socket.on('meta',(data) => {
+  specs.width = data.width;
+  specs.height = data.height;
 });
 
-let count = 1;
-let judge_income = false;
-while (! win.shouldWindowClose()) {
-  // const frameset = pipeline.waitForFrames();
-  // Build the color map
-  // const depthMap = colorizer.colorize(frameset.depthFrame);
-    // send my frame and receive other's frame
-  // socket.emit('file_transfer',depthMap_send);
-  // const judge = true;
-  // const depthMap;
-  if(count<=framebuffer.length){
-    const depthMap = framebuffer[count-1];
-    count += 1;
-    judge_income = true;
+socket.on('file_receive',(data)=>{
+  const depthMap = new Uint8Array(data);
+  win.beginPaint();
+  // const color = frameset.colorFrame;
+  // console.log(color.width);
+  // console.log(color.height);
+  glfw.draw2x2Streams(win.window, 2,
+      depthMap, 'rgb8', specs.width, specs.height,
+      // color.data, 'rgb8', color.width, color.height
+      );
+  win.endPaint();
+  console.log(count);
+
+  // If window is closed
+  if( win.shouldWindowClose() ){
+    // END STREAMING
+    socket.emit('receiver_break',{msg : "Receiver ended stream."});
   }
-  if (judge_income) {
-        // Paint the images onto the window
-        win.beginPaint();
-        // const color = frameset.colorFrame;
-        // console.log(color.width);
-        // console.log(color.height);
-        glfw.draw2x2Streams(win.window, 1,
-            depthMap, 'rgb8', 640, 480,
-            // color.data, 'rgb8', color.width, color.height
-            );
-        win.endPaint();
-        // judge = true;
-      }
-}
+});
 
-
-// pipeline.stop();
-// pipeline.destroy();
-// win.destroy();
-// rs2.cleanup();
-
-
-// const socket = io.connect('http://localhost:3001');
-// socket.on('news', (data) => {
-//   console.log(data);
-//   socket.emit('my other event', { my: 'data' });
-// });
-// var file = "haha";
-// socket.emit('file_transfer',file);
-// socket.on('file_receive',(data)=>{
-//   console.log(data);
-// });
+socket.on('sender_done',(data)=>{
+  console.log(data);
+  win.destroy();
+});

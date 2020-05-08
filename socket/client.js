@@ -30,7 +30,12 @@ socket.on('news', (data) => {
 //   console.log(data);
 // });
 socket.on('file_receive',(data)=>{
+<<<<<<< HEAD
   var array = new Float32Array(data);
+=======
+  // console.log(data);
+  var array = new Uint8Array(data);
+>>>>>>> daa3ccdf27406f62bb4f26111667e92b3b38006c
   framebuffer.push(array);
   console.log(data);
 });
@@ -47,6 +52,10 @@ while (! win.shouldWindowClose()) {
   // const depthMap;
   if(count<=framebuffer.length){
     const depthMap = framebuffer[count-1];
+<<<<<<< HEAD
+=======
+    console.log(depthMap);
+>>>>>>> daa3ccdf27406f62bb4f26111667e92b3b38006c
     count += 1;
     judge_income = true;
   }
