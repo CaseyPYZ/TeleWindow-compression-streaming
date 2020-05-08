@@ -6,6 +6,7 @@ const {glfw} = require('./glfw-window.js');
 
 //add 3d video
 
+
 // A GLFW Window to display the captured image
 const win = new GLFWWindow(1280, 720, 'Node.js Capture Example');
 
@@ -54,7 +55,7 @@ async function trans() {
         const depthMap = colorizer.colorize(frameset.depthFrame);
         socket.emit('file_transfer',depthMap.data.buffer);
         // console.log("depthMap");
-        await sleep(1);
+        await sleep(30);
         count += 1;
     }
     socket.emit('done',"donedone");
