@@ -5,6 +5,7 @@ const {glfw} = require('./glfw-window.js');
 
 const orle = require('orle');
 
+
 // A GLFW Window to display the captured image
 const win = new GLFWWindow(1280, 720, 'Node.js Capture Example');
 
