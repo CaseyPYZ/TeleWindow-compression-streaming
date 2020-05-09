@@ -6,7 +6,7 @@
 
 'use strict';
 
-const rs2 = require('./index.js');
+const rs2 = require("node-librealsense");
 const {GLFWWindow} = require('./glfw-window.js');
 const {glfw} = require('./glfw-window.js');
 
@@ -48,7 +48,7 @@ while (! win.shouldWindowClose()) {
   // console.log(frameSet.cacheMetadata)
   // console.log(frameSet.colorFrame)
   const pointsFrame = pc.calculate(frameSet.depthFrame);
-  // console.log(memorySizeOf(pointsFrame));
+  console.log(memorySizeOf(frameSet.depthFrame),memorySizeOf(pointsFrame));
   // console.log(pointsFrame.verticesData)
 
   pc.mapTo(frameSet.colorFrame);

@@ -60,6 +60,7 @@ async function receive(data){
   count++;
   console.log(count);
   console.log(Date.now());
+
   // If window is closed
   if( win.shouldWindowClose() ){
     // END STREAMING

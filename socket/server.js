@@ -23,6 +23,7 @@ io.on('connection', (socket) => {
     socket.on("file_transfer",(data)=>{
         count++;
         console.log(count);
+        console.log(Date.now());
         socket.broadcast.emit('file_receive',data);
     });
     socket.on('sender_done',(data)=>{

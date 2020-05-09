@@ -32,7 +32,8 @@ const colorizer = new rs2.Colorizer();
  
 // modification of context 
 
-const file = '/Users/user/Desktop/CS_Capstone/test_files/d435i_walking.bag';
+// const file = '/Users/user/Desktop/CS_Capstone/test_files/d435i_walking.bag';
+const file = '/Users/michaelzhang/Desktop/CS_Capstone/test_files/d435i_walking.bag';
 let cfg = new rs2.Config();
 cfg.enableDeviceFromFile(file);
 let pipeline = new rs2.Pipeline();
@@ -63,7 +64,7 @@ while (! win.shouldWindowClose()) {
     // console.log(color.height);
     count++;
     console.log(count);
-    glfw.draw2x2Streams(win.window, 1,
+    glfw.draw2x2Streams(win.window, 2,
         depthMap.data, 'rgb8', depthMap.width, depthMap.height,
         color.data, 'rgb8', color.width, color.height
         );
