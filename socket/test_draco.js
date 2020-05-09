@@ -82,13 +82,13 @@ const main = (modules) => {
             // } else if (method === "sequential") {
             //         encoder.SetEncodingMethod(encoderModule.MESH_SEQUENTIAL_ENCODING);
             // }
-            encoder.SetSpeedOptions(5, 5);
-            encoder.SetAttributeQuantization(encoderModule.POSITION, 10);
-            encoder.SetEncodingMethod(encoderModule.MESH_EDGEBREAKER_ENCODING);
-            const encodedData = new encoderModule.DracoInt8Array();
-            // Use default encoding setting.
-            const encodedLen = encoder.EncodeMeshToDracoBuffer(dracoMesh,
-                                                       encodedData);
+            // encoder.SetSpeedOptions(5, 5);
+            // encoder.SetAttributeQuantization(encoderModule.POSITION, 10);
+            // encoder.SetEncodingMethod(encoderModule.MESH_EDGEBREAKER_ENCODING);
+            // const encodedData = new encoderModule.DracoInt8Array();
+            // // Use default encoding setting.
+            // const encodedLen = encoder.EncodeMeshToDracoBuffer(dracoMesh,
+            //                                            encodedData);
             // encoderModule.destroy(dracoMesh);
             // encoderModule.destroy(encoder);
             // encoderModule.destroy(meshBuilder);

@@ -59,7 +59,7 @@ async function receive(data){
   win.endPaint();
   count++;
   console.log(count);
-
+  console.log(Date.now());
   // If window is closed
   if( win.shouldWindowClose() ){
     // END STREAMING

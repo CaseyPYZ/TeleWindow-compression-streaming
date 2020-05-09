@@ -84,10 +84,11 @@ async function trans() {
 
 
         socket.emit('file_transfer', depthMap.data.buffer);
-        await sleep(34);
+        await sleep(1000/60);
 
         count += 1;
         console.log(count);
+        console.log(Date.now());
         if(count>=100){
           console.log("Ending.");
           break;
