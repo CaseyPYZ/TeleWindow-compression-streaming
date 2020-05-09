@@ -26,45 +26,107 @@ const main = (modules) => {
     while (! win.shouldWindowClose()) {
         const frameSet = pipeline.waitForFrames();
         const pointsFrame = pc.calculate(frameSet.depthFrame);
+
         // color the depth Frame
         pc.mapTo(frameSet.colorFrame);
+        // console.log(pointsFrame);
         // for creating point cloud
-        buffer = new decoderModule.DecoderBuffer();
-        buffer.Init(new Int8Array(pointsFrame.verticesData), pointsFrame.verticesData.byteLength);  // some bufferview as input!
-        geometryType = decoder.GetEncodedGeometryType(buffer);
+        // buffer = new decoderModule.DecoderBuffer();
+        // buffer.Init(new Int8Array(pointsFrame.verticesData), pointsFrame.verticesData.byteLength);  // some bufferview as input!
+        // geometryType = decoder.GetEncodedGeometryType(buffer);
 
-        pointcloud = new decoderModule.PointCloud();
-        decoder.DecodeBufferToPointCloud(buffer, pointcloud);
+        // pointcloud = new decoderModule.PointCloud();
+        // decoder.DecodeBufferToPointCloud(buffer, pointcloud);
 
-        points = new decoderModule.DracoFloat32Array()
-        attr = decoder.GetAttribute(pointcloud, 0)
-        decoder.GetAttributeFloatForAllPoints(pointcloud, attr, points)
-        points.GetValue(0)
+        // points = new decoderModule.DracoFloat32Array()
+        // attr = decoder.GetAttribute(pointcloud, 0)
+        // decoder.GetAttributeFloatForAllPoints(pointcloud, attr, points)
+        // points.GetValue(0)
 
 
         // for creating mesh
-        // console.log(pointsFrame);
-//         let indices = [];
-//         let vertices = [];
-//         let texcoords = [];
-// //         // our modification
-//         vertices = new Uint8Array(pointsFrame.verticesData);
-//         // console.log(vertices);
-//         if(vertices.length>0){
-//             console.log("vertices");
-//             // texcoords = new Uint8Array(pointsFrame.textureCoordData);
-//             let i = 0;
-//             indices = [];
-//             while(i<vertices.length){
-//                 indices.push[i];
-//                 i += 1;
-//             }
-//         }
+        let indices = [];
+        let vertices = [];
+        let texcoords = [];
+//         // our modification
+        vertices = new Uint8Array(pointsFrame.verticesData);
+        // console.log(vertices);
+        if(vertices.length>0){
+            console.log("vertices");
+            // texcoords = new Uint8Array(pointsFrame.textureCoordData);
+            let i = 0;
+            // indices = Array.from(Array(vertices.length).keys())
+            console.log(indices);
 
-                                                                 
-  
+            while(i<vertices.length){
+                indices.push[i];
+                i += 1;
+            }
+            const mesh = {
+                indices : new Uint32Array(indices),
+                vertices : new Float32Array(vertices),
+              };
+            const encoder = new encoderModule.Encoder();
+            const meshBuilder = new encoderModule.MeshBuilder();
+            const dracoMesh = new encoderModule.Mesh();
+            const numFaces = mesh.indices.length / 3;
+            const numPoints = mesh.vertices.length;
+            meshBuilder.AddFacesToMesh(dracoMesh, numFaces, mesh.indices);
+            meshBuilder.AddFloatAttributeToMesh(dracoMesh, encoderModule.POSITION,
+                numPoints, 3, mesh.vertices);
+            console.log(dracoMesh);
+            // encoder.SetEncodingMethod(encoderModule.MESH_SEQUENTIAL_ENCODING);
+            // const method = "edgebreaker";
+            // if (method === "edgebreaker") {
+            //         encoder.SetEncodingMethod(encoderModule.MESH_EDGEBREAKER_ENCODING);
+            // } else if (method === "sequential") {
+            //         encoder.SetEncodingMethod(encoderModule.MESH_SEQUENTIAL_ENCODING);
+            // }
+            // encoder.SetSpeedOptions(5, 5);
+            // encoder.SetAttributeQuantization(encoderModule.POSITION, 10);
+            // encoder.SetEncodingMethod(encoderModule.MESH_EDGEBREAKER_ENCODING);
+            // const encodedData = new encoderModule.DracoInt8Array();
+            // // Use default encoding setting.
+            // const encodedLen = encoder.EncodeMeshToDracoBuffer(dracoMesh,
+            //                                            encodedData);
+            // encoderModule.destroy(dracoMesh);
+            // encoderModule.destroy(encoder);
+            // encoderModule.destroy(meshBuilder);
+    
+            // Create the Draco decoder.
+            console.log("finish encode");
+            // const buffer = new decoderModule.DecoderBuffer();
+            // buffer.Init(encodedData, encodedData.length);
+    
+            // // Create a buffer to hold the encoded data.
+            // const decoder = new decoderModule.Decoder();
+            // const geometryType = decoder.GetEncodedGeometryType(buffer);
+    
+            // // Decode the encoded geometry.
+            // let outputGeometry;
+            // let status;
+            // if (geometryType == decoderModule.TRIANGULAR_MESH) {
+            //     outputGeometry = new decoderModule.Mesh();
+            //     status = decoder.DecodeBufferToMesh(buffer, outputGeometry);
+            // } else {
+            //     outputGeometry = new decoderModule.PointCloud();
+            //     status = decoder.DecodeBufferToPointCloud(buffer, outputGeometry);
+            // }
+    
+            // You must explicitly delete objects created from the DracoDecoderModule
+            // or Decoder.
+            // decoderModule.destroy(outputGeometry);
+            // decoderModule.destroy(decoder);
+            // decoderModule.destroy(buffer);
+            // console.log(status);
+        }
+
+
+              
+    
     
     //   console.log(temp.length);
+        console.log("hhhhha")
         drawPointCloud(win, frameSet.colorFrame, pointsFrame);
     }
   

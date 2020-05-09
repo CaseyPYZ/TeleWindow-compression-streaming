@@ -12,8 +12,8 @@ const win = new GLFWWindow(1280, 720, 'Node.js Capture Example');
 // Colorizer is used to map distance in depth image into different colors
 const colorizer = new rs2.Colorizer();
 
-//const file = '/Users/michaelzhang/Desktop/CS_Capstone/test_files/d435i_walking.bag';
-const file = '/Users/user/Desktop/CS_Capstone/test_files/d435i_walking.bag';
+const file = '/Users/michaelzhang/Desktop/CS_Capstone/test_files/d435i_walking.bag';
+// const file = '/Users/user/Desktop/CS_Capstone/test_files/d435i_walking.bag';
 
 let cfg = new rs2.Config();
 cfg.enableDeviceFromFile(file);
@@ -84,10 +84,11 @@ async function trans() {
 
 
         socket.emit('file_transfer', depthMap.data.buffer);
-        await sleep(34);
+        await sleep(1000/60);
 
         count += 1;
         console.log(count);
+        console.log(Date.now());
         if(count>=100){
           console.log("Ending.");
           break;
