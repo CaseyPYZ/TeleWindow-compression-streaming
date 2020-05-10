@@ -4,8 +4,7 @@ const rs2 = require("node-librealsense")
 const {GLFWWindow} = require('./glfw-window.js');
 const {glfw} = require('./glfw-window.js');
 
-const orle = require('orle');
-
+// const orle = require('orle');
 
 const socket = io.connect('http://localhost:3001');
 socket.on('news', (data) => {
@@ -36,7 +35,7 @@ socket.on('file_receive',(data)=>{
 });
 
 socket.on('sender_done',(data)=>{
-  console.log(data);
+  //console.log(data);
   win.destroy();
 });
 
@@ -46,6 +45,7 @@ async function receive(data){
      * const depthMap = await orle.decode(data);
      */
 
+  /****** BEGIN OF RENDERING ******/
   const depthMap = new Uint8Array(data);
 
   win.beginPaint();
@@ -65,5 +65,6 @@ async function receive(data){
     // END STREAMING
     socket.emit('receiver_break',{msg : "Receiver ended stream."});
   }
+  /****** END OF RENDERING ******/
 
 }

@@ -96,13 +96,17 @@ while (! win.shouldWindowClose()) {
   // use draco to encode
 
   // console.log("frameset.depthFrame");
-  console.log( typeof(frameset.depthFrame) );
+  //console.log( typeof(frameset.depthFrame) );
   
-  var buffer = frameset.depthFrame.data.buffer;
-  var df = new Uint8Array(buffer);
+  // var buffer = frameset.depthFrame.data.buffer;
+  // var df = new Uint8Array(buffer);
+
+  // This throws TypeError: argument 0 of Colorizer.colorize() should be a/an Frame
+  var str = JSON.stringify(frameset.depthFrame);
+  var obj = JSON.parse(str);
 
   // Build the color map
-  const depthMap = colorizer.colorize(frameset.depthFrame);
+  const depthMap = colorizer.colorize(obj);
 
   //console.log("depthMap");
   //console.log(memorySizeOf(depthMap));

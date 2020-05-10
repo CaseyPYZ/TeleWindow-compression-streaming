@@ -85,7 +85,9 @@ async function trans() {
 
         //var imgData = createImageData(new Uint16Array(depthMap.data.buffer), depthMap.width, depthMap.height);
 
-        socket.emit('file_transfer', frameset.depthFrame );
+        console.log(JSON.stringify(frameset.depthFrame));
+
+        socket.emit('file_transfer', JSON.stringify(frameset.depthFrame) );
 
         await sleep(34);
 

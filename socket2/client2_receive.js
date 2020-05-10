@@ -49,8 +49,10 @@ async function receive(data){
   /*** ORLE DECODING ***
      * const depthMap = await orle.decode(data);
      */
-  
-  const depthMap = colorizer.colorize(data);
+
+  // +> TypeError: argument 0 of Colorizer.colorize() should be a/an Frame
+  const obj = JSON.parse(data);  
+  const depthMap = colorizer.colorize(obj);
 
   win.beginPaint();
   // const color = frameset.colorFrame;
