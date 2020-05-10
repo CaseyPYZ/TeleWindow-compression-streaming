@@ -23,7 +23,7 @@ pipeline.start(cfg);
 let lookahead = false;
 let streamOn = true;
 
-const socket = io.connect('http://localhost:3001');
+const socket = io.connect('http://10.209.4.239:3001');
 socket.on('news', (data) => {
   console.log(data);
   socket.emit('my other event', { my: 'data' });

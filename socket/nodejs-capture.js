@@ -42,6 +42,49 @@ pipeline.start(cfg);
 // Start the camera
 // pipeline.start();
 
+
+// test for frame size 
+
+function memorySizeOf(obj) {
+  var bytes = 0;
+
+  function sizeOf(obj) {
+      if(obj !== null && obj !== undefined) {
+          switch(typeof obj) {
+          case 'number':
+              bytes += 8;
+              break;
+          case 'string':
+              bytes += obj.length * 2;
+              break;
+          case 'boolean':
+              bytes += 4;
+              break;
+          case 'object':
+              var objClass = Object.prototype.toString.call(obj).slice(8, -1);
+              if(objClass === 'Object' || objClass === 'Array') {
+                  for(var key in obj) {
+                      if(!obj.hasOwnProperty(key)) continue;
+                      sizeOf(obj[key]);
+                  }
+              } else bytes += obj.toString().length * 2;
+              break;
+          }
+      }
+      return bytes;
+  };
+
+  function formatByteSize(bytes) {
+      if(bytes < 1024) return bytes + " bytes";
+      else if(bytes < 1048576) return(bytes / 1024).toFixed(3) + " KiB";
+      else if(bytes < 1073741824) return(bytes / 1048576).toFixed(3) + " MiB";
+      else return(bytes / 1073741824).toFixed(3) + " GiB";
+  };
+
+  return formatByteSize(sizeOf(obj));
+};
+
+
 var count = 0;
 
 while (! win.shouldWindowClose()) {
@@ -50,10 +93,17 @@ while (! win.shouldWindowClose()) {
   // use draco to encode
 
   // Build the color map
-  const depthMap = colorizer.colorize(frameset.depthFrame);
+  const temp = new rs2.DepthFrame()
+  const p = frameset.depthFrame.streamProfile
+  temp.streamProfile = p
+  temp.height = frameset.depthFrame.height
+  temp.width = frameset.depthFrame.width
+  console.log();
+  // this is the render part
+  const depthMap = colorizer.colorize(temp);
   // let temp = new Uint8Array(depthMap.arrayBuffer)
-  // console.log(memorySizeOf(depthMap));
-  // console.log(memorySizeOf(frameset.colorFrame))
+  console.log(memorySizeOf(depthMap));
+  console.log(memorySizeOf(frameset.colorFrame))
   // console.log(depthMap.arrayBuffer);
   // console.log(temp);
   if (depthMap) {

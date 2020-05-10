@@ -7,7 +7,7 @@ const {glfw} = require('./glfw-window.js');
 const orle = require('orle');
 
 
-const socket = io.connect('http://localhost:3001');
+const socket = io.connect('http://10.209.4.239:3001');
 socket.on('news', (data) => {
   console.log(data);
   socket.emit('my other event', { my: 'data' });

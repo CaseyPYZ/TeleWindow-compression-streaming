@@ -3,7 +3,7 @@
 const server = require('http').Server();
 const io = require('socket.io')(server);
 
-server.listen(3001);
+server.listen(3001,"10.209.7.238");
 var users = []
 
 var count = 0;
