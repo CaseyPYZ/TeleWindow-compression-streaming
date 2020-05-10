@@ -46,6 +46,7 @@ async function receive(data){
      * const depthMap = await orle.decode(data);
      */
 
+  /****** BEGIN OF RENDERING ******/
   const depthMap = new Uint8Array(data);
 
   win.beginPaint();
@@ -66,5 +67,6 @@ async function receive(data){
     // END STREAMING
     socket.emit('receiver_break',{msg : "Receiver ended stream."});
   }
+  /****** END OF RENDERING ******/
 
 }
